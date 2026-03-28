@@ -1,0 +1,15 @@
+schema: spec-driven
+
+context: |
+  Project: SimpleCycle — a Progressive Web App (PWA) for structured cycling workouts using a smart trainer via Bluetooth.
+
+  The app must work fully offline once installed (no external internet services required).
+
+  Core functionality:
+  - Track workout time
+  - Adjust resistance/wattage on a Bluetooth smart trainer
+  - Calculate cycled distance
+  - Support structured workouts as input (e.g. interval plans)
+
+  Tech stack: Vanilla JavaScript, HTML, CSS (no build/transpile step — runs directly in Chrome).
+  Testing: Node.js + Jest. Type information via JSDoc annotations.
