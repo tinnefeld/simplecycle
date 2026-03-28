@@ -1,0 +1,179 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #1a1a2e;
+  --color-surface: #16213e;
+  --color-primary: #0f3460;
+  --color-accent: #e94560;
+  --color-text: #eaeaea;
+  --color-muted: #888;
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-danger: #e94560;
+  --radius: 8px;
+  --gap: 1rem;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem var(--gap);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-primary);
+}
+
+.app-header h1 {
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+/* Connection status */
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-muted);
+  transition: background 0.3s;
+}
+
+.connection-status.connected .status-dot    { background: var(--color-success); }
+.connection-status.connecting .status-dot   { background: var(--color-warning); }
+.connection-status.disconnected .status-dot { background: var(--color-muted); }
+
+/* Main layout */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: var(--gap);
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Sections */
+.section-connect,
+.section-workout,
+.section-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Metrics grid */
+.section-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap);
+}
+
+.metric {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.4rem;
+}
+
+/* Interval info */
+.section-interval {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.interval-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.interval-type {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: var(--color-primary);
+}
+
+.interval-type.warmup,
+.interval-type.cooldown {
+  background: var(--color-warning);
+  color: #000;
+}
+
+.interval-target {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.interval-countdown {
+  font-size: 1rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary   { background: var(--color-accent); color: #fff; }
+.btn-secondary { background: var(--color-primary); color: var(--color-text); }
+.btn-danger    { background: var(--color-danger);  color: #fff; }
+
+#workout-name {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}

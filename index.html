@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <title>SimpleCycle</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>SimpleCycle</h1>
+    <div class="connection-status" id="connection-status">
+      <span class="status-dot"></span>
+      <span class="status-label" id="status-label">Disconnected</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Bluetooth control -->
+    <section class="section-connect">
+      <button id="btn-connect" class="btn btn-primary">Connect Trainer</button>
+      <button id="btn-disconnect" class="btn btn-secondary" hidden>Disconnect</button>
+    </section>
+
+    <!-- Workout file loader -->
+    <section class="section-workout">
+      <label class="btn btn-secondary" for="workout-file">Load Workout</label>
+      <input type="file" id="workout-file" accept=".json" hidden />
+      <span id="workout-name"></span>
+    </section>
+
+    <!-- Live metrics display -->
+    <section class="section-metrics">
+      <div class="metric">
+        <div class="metric-value" id="metric-power">--</div>
+        <div class="metric-label">Watts</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" id="metric-cadence">--</div>
+        <div class="metric-label">RPM</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" id="metric-time">00:00</div>
+        <div class="metric-label">Time</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" id="metric-distance">0.00</div>
+        <div class="metric-label">km</div>
+      </div>
+    </section>
+
+    <!-- Current interval info -->
+    <section class="section-interval" id="section-interval" hidden>
+      <div class="interval-info">
+        <span class="interval-type" id="interval-type"></span>
+        <span class="interval-target" id="interval-target"></span>
+        <span class="interval-countdown" id="interval-countdown"></span>
+      </div>
+    </section>
+
+    <!-- Session controls -->
+    <section class="section-controls">
+      <button id="btn-start" class="btn btn-primary" disabled>Start</button>
+      <button id="btn-pause" class="btn btn-secondary" hidden>Pause</button>
+      <button id="btn-resume" class="btn btn-secondary" hidden>Resume</button>
+      <button id="btn-stop" class="btn btn-danger" hidden>Stop</button>
+    </section>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
