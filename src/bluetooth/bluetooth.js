@@ -20,6 +20,8 @@ import {
   CONTROL_POINT_UUID,
   CYCLING_POWER_SERVICE_UUID,
   CYCLING_POWER_MEASUREMENT_UUID,
+  OP_REQUEST_CONTROL,
+  OP_START_RESUME,
   parseIndoorBikeData,
   parseCyclingPowerMeasurement,
   buildSetTargetPowerCommand,
@@ -64,7 +66,6 @@ export function createTrainer() {
             { services: [FTMS_SERVICE_UUID] },
             { services: [CYCLING_POWER_SERVICE_UUID] },
           ],
-          optionalServices: [FTMS_SERVICE_UUID, CYCLING_POWER_SERVICE_UUID],
         });
       } catch (err) {
         trainer.status = 'disconnected';
@@ -97,6 +98,18 @@ export function createTrainer() {
           if (cadence !== null && trainer.onCadence) trainer.onCadence(cadence);
         });
         await dataChar.startNotifications();
+
+        // FTMS requires subscribing to Control Point indications before writing,
+        // then Request Control + Start before resistance commands are accepted.
+        if (controlPointChar) {
+          try {
+            await controlPointChar.startNotifications();
+            await controlPointChar.writeValueWithResponse(new Uint8Array([OP_REQUEST_CONTROL]));
+            await controlPointChar.writeValueWithResponse(new Uint8Array([OP_START_RESUME]));
+          } catch (err) {
+            console.warn('FTMS control point handshake failed:', err);
+          }
+        }
       } catch {
         // Fall back to Cycling Power Profile
         try {

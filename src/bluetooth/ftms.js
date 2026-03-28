@@ -9,6 +9,7 @@ export const CYCLING_POWER_SERVICE_UUID = '00001818-0000-1000-8000-00805f9b34fb'
 export const CYCLING_POWER_MEASUREMENT_UUID = '00002a63-0000-1000-8000-00805f9b34fb';
 
 // FTMS Control Point op codes
+export const OP_REQUEST_CONTROL = 0x00;
 export const OP_SET_TARGET_POWER = 0x05;
 export const OP_START_RESUME = 0x07;
 export const OP_STOP_PAUSE = 0x08;

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'simplecycle-v1';
+const CACHE_NAME = 'simplecycle-20260328';
 
 const PRECACHE_ASSETS = [
   '/',

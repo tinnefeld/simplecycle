@@ -79,6 +79,9 @@ initControls({
   },
   onError: showError,
   onAction() {
+    if (session.state.status === 'active' && workout && !workout.isDone()) {
+      trainer.setTargetPower(workout.currentInterval().targetWatts).catch(() => {});
+    }
     if (session.state.status === 'idle') workout = null;
     updateDisplay(session.state, workout);
   },
