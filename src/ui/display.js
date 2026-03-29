@@ -69,6 +69,9 @@ export function updateSessionButtons(status) {
   btnPause.hidden  = status !== 'active';
   btnResume.hidden = status !== 'paused';
   btnStop.hidden   = status === 'idle' || status === 'completed';
+
+  const ftpInput = document.getElementById('ftp-input');
+  if (ftpInput) ftpInput.disabled = status === 'active' || status === 'paused';
 }
 
 /**

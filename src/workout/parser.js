@@ -6,13 +6,14 @@
  *   "name": "Sweet Spot 2x20",
  *   "intervals": [
  *     { "type": "warmup",   "durationSecs": 600,  "targetWatts": 120 },
- *     { "type": "work",     "durationSecs": 1200, "targetWatts": 230 },
+ *     { "type": "work",     "durationSecs": 1200, "targetPercent": 88 },
  *     { "type": "rest",     "durationSecs": 300,  "targetWatts": 100 },
  *     { "type": "cooldown", "durationSecs": 600,  "targetWatts": 100 }
  *   ]
  * }
  *
  * Valid interval types: "warmup" | "work" | "rest" | "cooldown"
+ * Each interval must have exactly one of targetWatts or targetPercent.
  */
 
 const VALID_TYPES = new Set(['warmup', 'work', 'rest', 'cooldown']);
@@ -33,10 +34,11 @@ const VALID_TYPES = new Set(['warmup', 'work', 'rest', 'cooldown']);
 /**
  * Parse and validate a workout JSON string.
  * @param {string} jsonString
+ * @param {number} ftp - Rider's FTP in watts, used to resolve targetPercent (default 200)
  * @returns {WorkoutPlan}
  * @throws {Error} with a descriptive message if invalid
  */
-export function parseWorkout(jsonString) {
+export function parseWorkout(jsonString, ftp = 200) {
   let raw;
   try {
     raw = JSON.parse(jsonString);
@@ -67,14 +69,34 @@ export function parseWorkout(jsonString) {
     if (typeof iv.durationSecs !== 'number' || iv.durationSecs <= 0) {
       throw new Error(`${prefix}: "durationSecs" must be a positive number.`);
     }
-    if (typeof iv.targetWatts !== 'number' || iv.targetWatts < 0) {
-      throw new Error(`${prefix}: "targetWatts" must be a non-negative number.`);
+
+    const hasWatts = iv.targetWatts !== undefined;
+    const hasPct = iv.targetPercent !== undefined;
+
+    if (hasWatts && hasPct) {
+      throw new Error(`${prefix}: specify either "targetWatts" or "targetPercent", not both.`);
+    }
+    if (!hasWatts && !hasPct) {
+      throw new Error(`${prefix}: must have either "targetWatts" or "targetPercent".`);
+    }
+
+    let targetWatts;
+    if (hasWatts) {
+      if (typeof iv.targetWatts !== 'number' || iv.targetWatts < 0) {
+        throw new Error(`${prefix}: "targetWatts" must be a non-negative number.`);
+      }
+      targetWatts = iv.targetWatts;
+    } else {
+      if (typeof iv.targetPercent !== 'number' || iv.targetPercent < 1 || iv.targetPercent > 300) {
+        throw new Error(`${prefix}: "targetPercent" must be a number between 1 and 300.`);
+      }
+      targetWatts = Math.round(iv.targetPercent / 100 * ftp);
     }
 
     return {
       type: iv.type,
       durationSecs: iv.durationSecs,
-      targetWatts: iv.targetWatts,
+      targetWatts,
     };
   });
 

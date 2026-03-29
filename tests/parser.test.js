@@ -77,4 +77,72 @@ describe('parseWorkout — invalid interval fields', () => {
     const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetWatts: -1 }] });
     expect(() => parseWorkout(json)).toThrow('"targetWatts"');
   });
+
+  test('throws when neither targetWatts nor targetPercent is present', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60 }] });
+    expect(() => parseWorkout(json)).toThrow();
+  });
+
+  test('throws when both targetWatts and targetPercent are present', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetWatts: 200, targetPercent: 80 }] });
+    expect(() => parseWorkout(json)).toThrow();
+  });
+});
+
+describe('parseWorkout — targetPercent', () => {
+  test('resolves targetPercent to targetWatts using default FTP 200', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 80 }] });
+    const plan = parseWorkout(json);
+    expect(plan.intervals[0].targetWatts).toBe(160); // Math.round(80/100 * 200)
+  });
+
+  test('resolves targetPercent using provided FTP', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 88 }] });
+    const plan = parseWorkout(json, 250);
+    expect(plan.intervals[0].targetWatts).toBe(220); // Math.round(88/100 * 250)
+  });
+
+  test('rounds fractional result', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 75 }] });
+    const plan = parseWorkout(json, 210);
+    expect(plan.intervals[0].targetWatts).toBe(158); // Math.round(75/100 * 210) = Math.round(157.5) = 158
+  });
+
+  test('accepts targetPercent: 1 (lower boundary)', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 1 }] });
+    expect(() => parseWorkout(json)).not.toThrow();
+  });
+
+  test('accepts targetPercent: 300 (upper boundary)', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 300 }] });
+    expect(() => parseWorkout(json)).not.toThrow();
+  });
+
+  test('accepts targetPercent: 150 (sprint), resolves to 300W at FTP 200', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 150 }] });
+    const plan = parseWorkout(json, 200);
+    expect(plan.intervals[0].targetWatts).toBe(300);
+  });
+
+  test('throws on targetPercent: 0', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 0 }] });
+    expect(() => parseWorkout(json)).toThrow('"targetPercent"');
+  });
+
+  test('throws on targetPercent: 301', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 301 }] });
+    expect(() => parseWorkout(json)).toThrow('"targetPercent"');
+  });
+
+  test('throws on non-numeric targetPercent', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 'high' }] });
+    expect(() => parseWorkout(json)).toThrow('"targetPercent"');
+  });
+
+  test('output interval has no targetPercent field — only targetWatts', () => {
+    const json = JSON.stringify({ name: 'X', intervals: [{ type: 'work', durationSecs: 60, targetPercent: 100 }] });
+    const plan = parseWorkout(json, 200);
+    expect(plan.intervals[0]).not.toHaveProperty('targetPercent');
+    expect(plan.intervals[0]).toHaveProperty('targetWatts', 200);
+  });
 });

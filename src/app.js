@@ -5,6 +5,7 @@ import { createSession } from './session/session.js';
 import { createWorkout } from './workout/workout.js';
 import { initControls } from './ui/controls.js';
 import { updateDisplay, updateConnectionStatus, showError } from './ui/display.js';
+import { getFtp } from './settings.js';
 
 // Register service worker
 if ('serviceWorker' in navigator) {
@@ -90,3 +91,4 @@ initControls({
 // Initial UI state
 updateConnectionStatus('disconnected');
 updateDisplay(session.state, workout);
+document.getElementById('ftp-input').value = getFtp();

@@ -6,6 +6,7 @@
  */
 
 import { parseWorkout } from '../workout/parser.js';
+import { getFtp, setFtp } from '../settings.js';
 
 /**
  * @param {Object} opts
@@ -34,6 +35,20 @@ export function initControls({ trainer, session, onWorkoutLoaded, onError, onAct
   document.getElementById('btn-resume').addEventListener('click', () => { session.resume(); if (onAction) onAction(); });
   document.getElementById('btn-stop').addEventListener('click', () => { session.stop(); session.reset(); if (onAction) onAction(); });
 
+  // FTP input
+  const ftpInput = document.getElementById('ftp-input');
+  const saveFtp = () => {
+    try {
+      setFtp(ftpInput.value);
+      ftpInput.value = getFtp();
+    } catch (err) {
+      onError(err.message);
+      ftpInput.value = getFtp();
+    }
+  };
+  ftpInput.addEventListener('blur', saveFtp);
+  ftpInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') ftpInput.blur(); });
+
   // Workout file loader
   document.getElementById('workout-file').addEventListener('change', (event) => {
     const file = event.target.files[0];
@@ -42,7 +57,7 @@ export function initControls({ trainer, session, onWorkoutLoaded, onError, onAct
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const plan = parseWorkout(e.target.result);
+        const plan = parseWorkout(e.target.result, getFtp());
         document.getElementById('workout-name').textContent = plan.name;
         onWorkoutLoaded(plan);
       } catch (err) {
